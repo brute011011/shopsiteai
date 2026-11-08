@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { AppHeader } from "@/components/AppHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import hero from "@/assets/hero-baker.jpg";
 
 export const Route = createFileRoute("/")({
@@ -28,28 +30,23 @@ const faqs = [
   ["Can I cancel anytime?", "Yes. Cancel in one click from your dashboard. Your site stays until the end of the billing month."],
 ];
 
-const Btn = ({ children, ghost }: { children: React.ReactNode; ghost?: boolean }) => (
-  <a href="#pricing" className={`inline-flex items-center justify-center rounded-full border-2 border-ink px-6 py-3 font-medium transition-transform hover:-translate-y-0.5 ${ghost ? "bg-card text-foreground" : "bg-primary text-primary-foreground shadow-pop"}`}>{children}</a>
+const Btn = ({ children, ghost, href }: { children: React.ReactNode; ghost?: boolean; href?: string }) => href ? (
+  <a href={href} className="inline-flex items-center justify-center rounded-full border-2 border-ink bg-card px-6 py-3 font-medium text-foreground">{children}</a>
+) : (
+  <Link to="/auth" search={{ mode: "signup" }} className={`inline-flex items-center justify-center rounded-full border-2 border-ink px-6 py-3 font-medium transition-transform hover:-translate-y-0.5 ${ghost ? "bg-card text-foreground" : "bg-primary text-primary-foreground shadow-pop"}`}>{children}</Link>
 );
 
 function Index() {
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
-        <span className="font-display text-2xl">Shopsite<span className="text-primary">.</span>ai</span>
-        <nav className="flex items-center gap-5 text-sm">
-          <a href="#pricing" className="hidden sm:inline">Pricing</a>
-          <a href="#faq" className="hidden sm:inline">FAQ</a>
-          <a href="#pricing" className="rounded-full bg-ink px-4 py-2 text-ink-foreground">Start free</a>
-        </nav>
-      </header>
+      <AppHeader />
 
       <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-20 pt-8 md:grid-cols-2">
         <div>
           <p className="mb-4 inline-block rounded-full bg-accent px-3 py-1 text-sm text-accent-foreground">For cafés, salons, shops & trades</p>
           <h1 className="text-5xl leading-[1.05] md:text-7xl">Your business website, <em className="text-primary">written by AI</em> in 60 seconds.</h1>
           <p className="mt-6 max-w-md text-lg text-muted-foreground">Describe your business. Get a beautiful site. Change anything by just chatting. No designer, no Wix headaches.</p>
-          <div className="mt-8 flex flex-wrap gap-3"><Btn>Build my site free</Btn><Btn ghost>See pricing</Btn></div>
+          <div className="mt-8 flex flex-wrap gap-3"><Btn>Build my site free</Btn><Btn href="#pricing">See pricing</Btn></div>
           <p className="mt-4 text-sm text-muted-foreground">No card needed · 10 free AI edits</p>
         </div>
         <img src={hero} alt="Bakery owner looking at her new website" width={1280} height={960} className="w-full rounded-3xl border-2 border-ink object-cover shadow-pop" />
@@ -91,11 +88,11 @@ function Index() {
       <section className="mx-auto mb-20 max-w-6xl px-5">
         <div className="rounded-3xl border-2 border-ink bg-primary p-10 text-center text-primary-foreground shadow-pop md:p-16">
           <h2 className="text-5xl md:text-6xl">Stop paying for a website you can't change.</h2>
-          <div className="mt-8"><a href="#pricing" className="inline-flex rounded-full border-2 border-ink bg-card px-6 py-3 font-medium text-foreground">Build my site free</a></div>
+          <div className="mt-8"><Link to="/auth" search={{ mode: "signup" }} className="inline-flex rounded-full border-2 border-ink bg-card px-6 py-3 font-medium text-foreground">Build my site free</Link></div>
         </div>
       </section>
 
-      <footer className="border-t-2 border-ink py-8 text-center text-sm text-muted-foreground">© 2026 Shopsite AI</footer>
+      <SiteFooter />
     </div>
   );
 }
