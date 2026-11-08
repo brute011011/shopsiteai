@@ -8,6 +8,13 @@
       "when": 1794043331173,
       "tag": "0000_core_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794096309519,
+      "tag": "0001_signup_marketing_optin",
+      "breakpoints": true
     }
   ]
 }
