@@ -38,10 +38,10 @@ function Dashboard() {
 
   async function createSite() {
     const limit = siteLimit(profile.data?.plan ?? "free");
-    if ((sites.data?.length ?? 0) >= limit) return toast.error(`Your plan allows ${limit} site${limit > 1 ? "s" : ""}. Upgrade for more.`);
+    if ((sites.data?.length ?? 0) >= limit) { toast.error(`Your plan allows ${limit} site${limit > 1 ? "s" : ""}. Upgrade for more.`); return; }
     const { data: u } = await supabase.auth.getUser();
     const { data, error } = await supabase.from("sites").insert({ user_id: u.user!.id, name: "My website" }).select("id").single();
-    if (error) return toast.error("Couldn't create site");
+    if (error) { toast.error("Couldn't create site"); return; }
     qc.invalidateQueries({ queryKey: ["sites"] });
     navigate({ to: "/sites/$id", params: { id: data.id } });
   }

@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Architecture rules
+- AI calls run only in `src/routes/api/generate.ts` (server route, bearer-verified); credits are spent atomically via the `spend_credit` DB function and refunded on failure — never call AI from the browser.
+- Plan prices, credits and cost estimates live only in `src/lib/pricing.ts` (covered by `pricing.test.ts`) so UI, metering and tests share one source.
+- User-generated site HTML is only rendered inside sandboxed iframes (no `allow-same-origin`) to keep it off the app origin.
+- Credits/plan columns on `profiles` are not user-updatable (column grants); only server code with the admin client changes them.

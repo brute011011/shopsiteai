@@ -12,7 +12,7 @@ export function FeedbackButton() {
     const { data } = await supabase.auth.getUser();
     const { error } = await supabase.from("feedback").insert({ message: msg.trim().slice(0, 2000), user_id: data.user?.id ?? null, email: data.user?.email ?? null });
     setBusy(false);
-    if (error) return toast.error("Couldn't send feedback. Please try again.");
+    if (error) { toast.error("Couldn't send feedback. Please try again."); return; }
     toast.success("Thanks! We read every message.");
     setMsg(""); setOpen(false);
   }

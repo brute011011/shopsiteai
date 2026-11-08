@@ -43,7 +43,6 @@ export const Route = createFileRoute("/api/generate")({
           stream = await streamChatCompletion({
             model: "openai/gpt-6-astra",
             messages: [{ role: "system", content: SYSTEM }, { role: "user", content: userMsg }],
-            stream: true,
             stream_options: { include_usage: true },
           });
         } catch (e) {
