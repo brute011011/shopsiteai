@@ -48,7 +48,7 @@ function Editor() {
 
   async function rename(name: string) { await supabase.from("sites").update({ name }).eq("id", id); qc.invalidateQueries({ queryKey: ["site", id] }); }
   async function togglePublish() {
-    if (!site.data?.html) return toast.error("Build your site first.");
+    if (!site.data?.html) { toast.error("Build your site first."); return; }
     await supabase.from("sites").update({ published: !site.data.published }).eq("id", id);
     qc.invalidateQueries({ queryKey: ["site", id] });
     toast.success(site.data.published ? "Site unpublished" : "Your site is live!");

@@ -21,7 +21,7 @@ function Account() {
 
   async function setMarketing(v: boolean) {
     const { error } = await supabase.from("profiles").update({ marketing_opt_in: v }).eq("id", p.data!.id);
-    if (error) return toast.error("Couldn't save");
+    if (error) { toast.error("Couldn't save"); return; }
     qc.invalidateQueries({ queryKey: ["profile"] });
     toast.success(v ? "Subscribed to product tips" : "Unsubscribed from product tips");
   }
