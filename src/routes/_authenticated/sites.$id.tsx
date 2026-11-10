@@ -18,7 +18,7 @@ function Editor() {
   const [view, setView] = useState<"chat" | "preview">("chat");
   const abortRef = useRef<AbortController | null>(null);
 
-  const site = useQuery({ queryKey: ["site", id], queryFn: async () => { const { data, error } = await supabase.from("sites").select("*").eq("id", id).single(); if (error) throw error; return data; } });
+  const site = useQuery({ queryKey: ["site", id], queryFn: async () => { const { data: u } = await supabase.auth.getUser(); const { data, error } = await supabase.from("sites").select("*").eq("id", id).eq("user_id", u.user!.id).single(); if (error) throw error; return data; } });
   const msgs = useQuery({ queryKey: ["msgs", id], queryFn: async () => { const { data } = await supabase.from("site_messages").select("id,role,content").eq("site_id", id).order("created_at"); return data ?? []; } });
   const profile = useQuery({ queryKey: ["profile"], queryFn: async () => { const { data: u } = await supabase.auth.getUser(); const { data } = await supabase.from("profiles").select("credits,plan").eq("id", u.user!.id).single(); return data; } });
 
@@ -54,6 +54,7 @@ function Editor() {
     toast.success(site.data.published ? "Site unpublished" : "Your site is live!");
   }
 
+  if (site.isError) return <div className="p-10 text-center">This website doesn't exist or isn't yours. <Link to="/dashboard" className="text-primary underline">Back to dashboard</Link></div>;
   const html = site.data?.html ?? "";
   const empty = !html && !streaming;
   return (

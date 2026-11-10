@@ -30,7 +30,8 @@ function Dashboard() {
   const sites = useQuery({
     queryKey: ["sites"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("sites").select("id,name,published,updated_at").order("updated_at", { ascending: false });
+      const { data: u } = await supabase.auth.getUser();
+      const { data, error } = await supabase.from("sites").select("id,name,published,updated_at").eq("user_id", u.user!.id).order("updated_at", { ascending: false });
       if (error) throw error;
       return data;
     },
