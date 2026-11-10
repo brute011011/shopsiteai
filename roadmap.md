@@ -1,0 +1,11 @@
+# Roadmap
+- [x] Landing page, pricing, FAQ
+- [x] Sign-up/login (email + Google), dashboard
+- [x] AI website builder with streaming, credit metering, refunds
+- [x] Database with row-level security
+- [x] Admin page (revenue, AI cost, margin), feedback button
+- [x] Terms, privacy, data export, account deletion, email opt-in
+- [ ] Payments (cards) — blocked: workspace needs a paid Lovable plan for built-in Stripe
+- [ ] Crypto payments — blocked: decide provider after cards are live
+- [ ] Custom email sender domain — blocked: user needs to own a domain
+- [ ] Phase 3 launch plan, referral credits
