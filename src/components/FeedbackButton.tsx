@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 
 export function FeedbackButton() {
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const path = useLocation({ select: (l) => l.pathname });
   async function send() {
     if (!msg.trim()) return;
     setBusy(true);
@@ -16,6 +18,7 @@ export function FeedbackButton() {
     toast.success("Thanks! We read every message.");
     setMsg(""); setOpen(false);
   }
+  if (path.startsWith("/s/")) return null;
   return (
     <div className="fixed bottom-4 right-4 z-50">
       {open && (
