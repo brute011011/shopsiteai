@@ -18,6 +18,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedProjectsRouteImport } from './routes/_authenticated/projects'
 import { Route as ApiGenerateRouteImport } from './routes/api/generate'
 import { Route as SIdRouteImport } from './routes/s.$id'
 import { Route as AuthenticatedSitesIdRouteImport } from './routes/_authenticated/sites.$id'
@@ -66,6 +67,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProjectsRoute = AuthenticatedProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiGenerateRoute = ApiGenerateRouteImport.update({
   id: '/api/generate',
   path: '/api/generate',
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/projects': typeof AuthenticatedProjectsRoute
   '/api/generate': typeof ApiGenerateRoute
   '/s/$id': typeof SIdRoute
   '/sites/$id': typeof AuthenticatedSitesIdRoute
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/projects': typeof AuthenticatedProjectsRoute
   '/api/generate': typeof ApiGenerateRoute
   '/s/$id': typeof SIdRoute
   '/sites/$id': typeof AuthenticatedSitesIdRoute
@@ -119,6 +127,7 @@ export interface FileRoutesById {
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/projects': typeof AuthenticatedProjectsRoute
   '/api/generate': typeof ApiGenerateRoute
   '/s/$id': typeof SIdRoute
   '/_authenticated/sites/$id': typeof AuthenticatedSitesIdRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/dashboard'
+    | '/projects'
     | '/api/generate'
     | '/s/$id'
     | '/sites/$id'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/dashboard'
+    | '/projects'
     | '/api/generate'
     | '/s/$id'
     | '/sites/$id'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/_authenticated/account'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
+    | '/_authenticated/projects'
     | '/api/generate'
     | '/s/$id'
     | '/_authenticated/sites/$id'
@@ -242,6 +254,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/projects': {
+      id: '/_authenticated/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof AuthenticatedProjectsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/generate': {
       id: '/api/generate'
       path: '/api/generate'
@@ -270,6 +289,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedProjectsRoute: typeof AuthenticatedProjectsRoute
   AuthenticatedSitesIdRoute: typeof AuthenticatedSitesIdRoute
 }
 
@@ -277,6 +297,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedProjectsRoute: AuthenticatedProjectsRoute,
   AuthenticatedSitesIdRoute: AuthenticatedSitesIdRoute,
 }
 
