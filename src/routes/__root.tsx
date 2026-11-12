@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { FeedbackButton } from "@/components/FeedbackButton";
 import { supabase } from "@/integrations/supabase/client";
+import { workspaceDestination } from "@/lib/editor-state";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -123,7 +124,13 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((event) => {
+    const redirectToWorkspace = (signedIn: boolean) => {
+      const destination = workspaceDestination(router.state.location.pathname, signedIn);
+      if (destination) void router.navigate({ to: destination, replace: true });
+    };
+    void supabase.auth.getSession().then(({ data }) => redirectToWorkspace(Boolean(data.session)));
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "INITIAL_SESSION" || event === "SIGNED_IN") redirectToWorkspace(Boolean(session));
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();

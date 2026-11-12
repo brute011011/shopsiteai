@@ -35,3 +35,5 @@ use the editor.
 - User-generated site HTML is only rendered inside sandboxed iframes (no `allow-same-origin`) to keep it off the app origin.
 - Credits/plan columns on `profiles` are not user-updatable (column grants); only server code with the admin client changes them.
 - Signed-in pages wrap content in `AppShell` (sidebar + credits meter); site imports (ZIP/HTML/public GitHub) are inlined client-side into one HTML string in `src/lib/import-site.ts` so the editor and public page keep a single `sites.html` field.
+- The site editor uses a dedicated full-height chat/preview workspace; show only committed HTML in its sandboxed preview to avoid flashing incomplete streamed markup.
+- Centralize public-entry session redirects in the root auth listener and keep password recovery outside automatic workspace navigation.

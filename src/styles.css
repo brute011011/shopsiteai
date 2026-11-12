@@ -154,3 +154,28 @@
 @layer base {
   h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.01em; }
 }
+
+/* Neutral studio surfaces retain the brand's coral actions and green success states. */
+.editor-workspace {
+  --background: oklch(0.985 0.002 160);
+  --foreground: oklch(0.23 0.008 160);
+  --card: oklch(1 0 0);
+  --secondary: oklch(0.945 0.006 160);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.95 0.004 160);
+  --muted-foreground: oklch(0.48 0.012 160);
+  --border: oklch(0.88 0.006 160);
+  --input: var(--border);
+  --radius: 0.5rem;
+}
+.dark .editor-workspace {
+  --background: oklch(0.19 0.005 160);
+  --foreground: oklch(0.95 0.004 160);
+  --card: oklch(0.22 0.005 160);
+  --secondary: oklch(0.28 0.006 160);
+  --muted: oklch(0.16 0.004 160);
+  --muted-foreground: oklch(0.72 0.012 160);
+  --border: oklch(0.34 0.006 160);
+  --accent-foreground: oklch(0.8 0.09 145);
+}
+.editor-workspace h1, .editor-workspace h2 { letter-spacing: 0; }

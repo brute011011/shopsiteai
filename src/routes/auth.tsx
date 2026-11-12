@@ -30,7 +30,7 @@ function AuthPage() {
     try {
       if (mode === "signup") {
         if (!agree) { toast.error("Please accept the Terms and Privacy Policy."); return; }
-        const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + "/dashboard", data: { terms_accepted: "true", marketing_opt_in: marketing } } });
+        const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + "/auth", data: { terms_accepted: "true", marketing_opt_in: marketing } } });
         if (error) throw error;
         setSent("Check your inbox and click the link to confirm your account.");
       } else if (mode === "signin") {
