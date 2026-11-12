@@ -34,3 +34,4 @@ use the editor.
 - Plan prices, credits and cost estimates live only in `src/lib/pricing.ts` (covered by `pricing.test.ts`) so UI, metering and tests share one source.
 - User-generated site HTML is only rendered inside sandboxed iframes (no `allow-same-origin`) to keep it off the app origin.
 - Credits/plan columns on `profiles` are not user-updatable (column grants); only server code with the admin client changes them.
+- Signed-in pages wrap content in `AppShell` (sidebar + credits meter); site imports (ZIP/HTML/public GitHub) are inlined client-side into one HTML string in `src/lib/import-site.ts` so the editor and public page keep a single `sites.html` field.

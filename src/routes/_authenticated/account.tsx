@@ -3,13 +3,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { AppHeader } from "@/components/AppHeader";
-import { SiteFooter } from "@/components/SiteFooter";
+import { AppShell } from "@/components/AppShell";
 import { deleteMyAccount } from "@/lib/account.functions";
 import { PLANS, CREDIT_PACK } from "@/lib/pricing";
 
 export const Route = createFileRoute("/_authenticated/account")({
-  head: () => ({ meta: [{ title: "Account & billing — Shopsite AI" }, { name: "description", content: "Manage your plan, data and email preferences." }, { property: "og:title", content: "Account — Shopsite AI" }, { property: "og:description", content: "Manage your account." }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Settings — Shopsite AI" }, { name: "description", content: "Manage your plan, data and email preferences." }, { property: "og:title", content: "Account — Shopsite AI" }, { property: "og:description", content: "Manage your account." }, { name: "robots", content: "noindex" }] }),
   component: Account,
 });
 
@@ -36,12 +35,11 @@ function Account() {
     catch { toast.error("Couldn't delete account. Please contact us."); }
   }
 
-  const box = "rounded-3xl border-2 border-ink bg-card p-6";
+  const box = "rounded-3xl border border-border bg-card p-6";
   return (
-    <div className="min-h-screen bg-background">
-      <AppHeader />
-      <main className="mx-auto max-w-3xl space-y-6 px-5 pb-20">
-        <h1 className="text-5xl">Account</h1>
+    <AppShell>
+      <main className="mx-auto max-w-3xl space-y-6 px-5 pb-20 pt-10">
+        <h1 className="text-5xl">Settings</h1>
         <section className={box}>
           <h2 className="text-3xl">Plan & billing</h2>
           <p className="mt-2">You're on <b className="capitalize">{p.data?.plan}</b> with <b>{p.data?.credits}</b> AI edits left.</p>
@@ -64,7 +62,6 @@ function Account() {
           </div>
         </section>
       </main>
-      <SiteFooter />
-    </div>
+    </AppShell>
   );
 }

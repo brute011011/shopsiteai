@@ -14,10 +14,11 @@ async function inline(html: string, dir: string, read: Reader) {
   const isLocal = (u: string) => !/^(https?:)?\/\//i.test(u) && !u.startsWith("data:");
   for (const m of [...html.matchAll(/<link[^>]+rel=["']?stylesheet["']?[^>]*>/gi)]) {
     const href = m[0].match(/href=["']([^"']+)["']/i)?.[1];
-    if (href && isLocal(href)) { const css = await read(join(dir, href.split("?")[0])); if (css != null) html = html.replace(m[0], `<style>${css}</style>`); }
+    if (href && isLocal(href)) { const css = await read(join(dir, href.split("?")[0] ?? href)); if (css != null) html = html.replace(m[0], `<style>${css}</style>`); }
   }
   for (const m of [...html.matchAll(/<script([^>]*)src=["']([^"']+)["']([^>]*)><\/script>/gi)]) {
-    if (isLocal(m[2])) { const js = await read(join(dir, m[2].split("?")[0])); if (js != null) html = html.replace(m[0], `<script${m[1]}${m[3]}>${js.replace(/<\/script/gi, "<\\/script")}</script>`); }
+    const src = m[2] ?? "";
+    if (isLocal(src)) { const js = await read(join(dir, src.split("?")[0] ?? src)); if (js != null) html = html.replace(m[0], `<script${m[1] ?? ""}${m[3] ?? ""}>${js.replace(/<\/script/gi, "<\\/script")}</script>`); }
   }
   return html;
 }
@@ -36,7 +37,7 @@ export async function importZip(file: File) {
 export async function importGithub(url: string) {
   const m = url.trim().match(/github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?(?:\/tree\/([^/]+)(?:\/(.*))?)?\/?$/i);
   if (!m) throw new Error("Paste a GitHub link like https://github.com/user/repo");
-  const [, owner, repo, branchIn, sub = ""] = m;
+  const owner = m[1]!, repo = m[2]!, branchIn = m[3], sub = m[4] ?? "";
   const branches = branchIn ? [branchIn] : ["main", "master", "gh-pages"];
   const dirs = sub ? [sub] : ["", "public", "docs", "dist", "build"];
   for (const b of branches) for (const d of dirs) {

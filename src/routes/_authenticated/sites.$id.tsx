@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/sites/$id")({
   head: () => ({ meta: [{ title: "Editor — Shopsite AI" }, { name: "description", content: "Edit your website by chatting with AI." }, { property: "og:title", content: "Editor — Shopsite AI" }, { property: "og:description", content: "Edit your website by chatting with AI." }, { name: "robots", content: "noindex" }] }),
+  validateSearch: (s: Record<string, unknown>): { prompt?: string } => (typeof s["prompt"] === "string" ? { prompt: s["prompt"].slice(0, 2000) } : {}),
   component: Editor,
 });
 
@@ -17,14 +18,20 @@ function Editor() {
   const [live, setLive] = useState("");
   const [view, setView] = useState<"chat" | "preview">("chat");
   const abortRef = useRef<AbortController | null>(null);
+  const { prompt: initial } = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const started = useRef(false);
+  useEffect(() => {
+    if (initial && !started.current) { started.current = true; navigate({ search: {}, replace: true }); send(undefined, initial); }
+  }, [initial]);
 
   const site = useQuery({ queryKey: ["site", id], queryFn: async () => { const { data: u } = await supabase.auth.getUser(); const { data, error } = await supabase.from("sites").select("*").eq("id", id).eq("user_id", u.user!.id).single(); if (error) throw error; return data; } });
   const msgs = useQuery({ queryKey: ["msgs", id], queryFn: async () => { const { data } = await supabase.from("site_messages").select("id,role,content").eq("site_id", id).order("created_at"); return data ?? []; } });
   const profile = useQuery({ queryKey: ["profile"], queryFn: async () => { const { data: u } = await supabase.auth.getUser(); const { data } = await supabase.from("profiles").select("credits,plan").eq("id", u.user!.id).single(); return data; } });
 
-  async function send(e?: React.FormEvent) {
+  async function send(e?: React.FormEvent, override?: string) {
     e?.preventDefault();
-    const text = prompt.trim();
+    const text = (override ?? prompt).trim();
     if (text.length < 2 || streaming) return;
     setStreaming(true); setLive(""); setView("chat");
     const ctrl = new AbortController(); abortRef.current = ctrl;
@@ -60,7 +67,7 @@ function Editor() {
   return (
     <div className="flex h-screen flex-col bg-background">
       <header className="flex flex-wrap items-center gap-3 border-b-2 border-ink px-4 py-3">
-        <Link to="/dashboard" className="text-sm">← Back</Link>
+        <Link to="/dashboard" className="text-sm">← Home</Link>
         <input defaultValue={site.data?.name} key={site.data?.name} onBlur={(e) => e.target.value.trim() && rename(e.target.value.trim().slice(0, 80))} className="min-w-0 flex-1 bg-transparent font-display text-2xl outline-none" />
         <span className="text-sm text-muted-foreground">{profile.data?.credits ?? "…"} edits left</span>
         {site.data?.published && <a href={`/s/${id}`} target="_blank" rel="noreferrer" className="text-sm text-primary underline">View live</a>}

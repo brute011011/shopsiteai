@@ -8,4 +8,5 @@
 - [ ] Payments (cards) — blocked: workspace needs a paid Lovable plan for built-in Stripe
 - [ ] Crypto payments — blocked: decide provider after cards are live
 - [ ] Custom email sender domain — blocked: user needs to own a domain
+- [x] Lovable-style signed-in workspace: sidebar, prompt home, projects, settings, import ZIP/GitHub
 - [ ] Phase 3 launch plan, referral credits
