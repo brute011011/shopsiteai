@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowUp, Check, Code2, Download, ExternalLink, Loader2, MessageSquare, Monitor, RotateCcw, Save, Smartphone, Sparkles, Square, Tablet } from "lucide-react";
+import { ArrowLeft, ArrowUp, Check, Code2, Download, ExternalLink, Loader2, MessageSquare, Copy, Monitor, RotateCcw, Save, Smartphone, Sparkles, Square, Tablet } from "lucide-react";
 import { toast } from "sonner";
 import JSZip from "jszip";
+import ReactMarkdown from "react-markdown";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { generationSucceeded, type EditingStatus } from "@/lib/editor-state";
+import { assistantSucceeded, type AssistantMode, type EditingStatus } from "@/lib/editor-state";
 
 export const Route = createFileRoute("/_authenticated/sites/$id")({
   head: () => ({ meta: [{ title: "Website studio — Shopsite AI" }, { name: "description", content: "Chat, edit code and preview your Shopsite AI website." }, { property: "og:title", content: "Website studio — Shopsite AI" }, { property: "og:description", content: "Your website editing workspace." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
@@ -22,6 +23,8 @@ function Editor() {
   const navigate = Route.useNavigate();
   const qc = useQueryClient();
   const [prompt, setPrompt] = useState("");
+  const [mode, setMode] = useState<AssistantMode>("chat");
+  const [reply, setReply] = useState("");
   const [status, setStatus] = useState<EditingStatus>("idle");
   const [written, setWritten] = useState(0);
   const [pendingPrompt, setPendingPrompt] = useState("");
@@ -70,29 +73,30 @@ function Editor() {
   }
 
   async function send(e?: React.FormEvent, override?: string) {
+    const requestMode = override ? "edit" : mode;
     e?.preventDefault();
     const text = (override ?? prompt).trim();
     if (text.length < 2 || busy || localSaving) return;
-    if (dirty) { toast.error("Save or discard your code changes first."); return; }
-    setStatus("connecting"); setWritten(0); setPendingPrompt(text); setView("chat");
+    if (dirty && requestMode === "edit") { toast.error("Save or discard your code changes first."); return; }
+    setStatus("connecting"); setReply(""); setWritten(0); setPendingPrompt(text); setView("chat");
     const ctrl = new AbortController(); abortRef.current = ctrl;
     try {
       const { data: s } = await supabase.auth.getSession();
       if (!s.session) throw new Error("Please sign in again.");
-      const res = await fetch("/api/generate", { method: "POST", signal: ctrl.signal, headers: { "content-type": "application/json", authorization: `Bearer ${s.session.access_token}` }, body: JSON.stringify({ siteId: id, prompt: text }) });
+      const res = await fetch("/api/generate", { method: "POST", signal: ctrl.signal, headers: { "content-type": "application/json", authorization: `Bearer ${s.session.access_token}` }, body: JSON.stringify({ siteId: id, prompt: text, mode: requestMode }) });
       if (!res.ok || !res.body) throw new Error(await res.text());
       setPrompt(""); setStatus("generating");
       const reader = res.body.getReader(); const dec = new TextDecoder(); let output = "";
-      while (true) { const { done, value } = await reader.read(); if (done) break; output += dec.decode(value, { stream: true }); setWritten(output.length); }
+      while (true) { const { done, value } = await reader.read(); if (done) break; output += dec.decode(value, { stream: true }); setWritten(output.length); if (requestMode === "chat") setReply(output.replace("<!--SHOPSITE_ERROR-->", "")); }
       output += dec.decode();
-      if (!generationSucceeded(output)) throw new Error("The AI didn't finish. Your saved website is unchanged; please try again.");
-      setStatus("saving"); await refresh(); setStatus("saved"); setPendingPrompt(""); setTab("preview"); setView("preview"); setRevision((r) => r + 1);
+      if (!assistantSucceeded(output, requestMode)) throw new Error("The AI didn't finish. Your saved website is unchanged; please try again.");
+      setStatus("saving"); await refresh(); setStatus("saved"); setPendingPrompt(""); setReply(""); if (requestMode === "edit") { setTab("preview"); setView("preview"); setRevision((r) => r + 1); }
     } catch (err) {
       setStatus("error");
       if (err instanceof Error && err.name === "AbortError") toast("Stopped. Your last saved preview is still available.");
       else toast.error(err instanceof Error ? err.message : "Connection problem. Please try again.");
       if (!override) setPrompt(text);
-      await refresh(); setPendingPrompt("");
+      await refresh(); setPendingPrompt(""); setReply("");
     } finally { abortRef.current = null; }
   }
 
@@ -143,19 +147,21 @@ function Editor() {
       </nav>
       <div className="flex min-h-0 flex-1">
         <section className={`${view === "chat" ? "flex" : "hidden"} w-full shrink-0 flex-col md:flex md:w-[340px] md:border-r lg:w-[380px]`}>
-          <div className="flex h-12 shrink-0 items-center gap-2 border-b px-4 text-sm font-semibold"><Sparkles className="size-4 text-primary" />Shopsite assistant</div>
+          <div className="flex h-12 shrink-0 items-center gap-2 border-b px-4 text-sm font-semibold"><Sparkles className="size-4 text-primary" />Shopsite assistant <span className="ml-auto text-xs font-normal text-muted-foreground">{mode === "chat" ? "Claude" : "Builder"}</span></div>
           <div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-4" aria-label="Chat history">
             {!msgs.data?.length && !pendingPrompt && <div className="py-8"><Sparkles className="mb-4 size-7 text-primary" /><h1 className="text-2xl">Let’s build your website.</h1><p className="mt-2 text-sm text-muted-foreground">What’s your business, and what would you like on your site?</p></div>}
             {msgs.isError && <p className="text-sm text-destructive">Chat couldn't load. <Button variant="link" onClick={() => msgs.refetch()}>Retry</Button></p>}
-            {msgs.data?.map((m) => <article key={m.id} className={m.role === "user" ? "ml-7 rounded-lg bg-secondary p-3" : "pr-4"}><div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">{m.role === "assistant" && <Sparkles className="size-3 text-primary" />}{m.role === "user" ? "You" : "Shopsite AI"}</div><p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{m.content}</p>{m.role === "assistant" && <div className="mt-3 flex items-center gap-1 text-xs text-accent-foreground"><Check className="size-3" />Website updated</div>}</article>)}
+            {msgs.data?.map((m) => <article key={m.id} className={m.role === "user" ? "ml-7 rounded-lg bg-secondary p-3" : "pr-4"}><div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">{m.role === "assistant" && <Sparkles className="size-3 text-primary" />}{m.role === "user" ? "You" : "Shopsite AI"}</div><div className="assistant-markdown break-words text-sm leading-relaxed"><ReactMarkdown>{m.content}</ReactMarkdown></div>{m.role === "assistant" && <Button variant="ghost" size="icon" aria-label="Copy reply" title="Copy reply" onClick={async () => { try { await navigator.clipboard.writeText(m.content); toast.success("Copied"); } catch { toast.error("Could not copy"); } }}><Copy /></Button>}{m.role === "assistant" && m.content === "Done — your site is updated." && <div className="mt-3 flex items-center gap-1 text-xs text-accent-foreground"><Check className="size-3" />Website updated</div>}</article>)}
             {pendingPrompt && <article className="ml-7 rounded-lg bg-secondary p-3"><p className="mb-2 text-xs text-muted-foreground">You</p><p className="whitespace-pre-wrap break-words text-sm">{pendingPrompt}</p></article>}
-            {busy && <div role="status" className="space-y-3 text-sm"><div className="flex items-center gap-2"><Loader2 className="size-4 text-primary motion-safe:animate-spin" />{labels[status]}</div><div className="border-l-2 border-primary/30 pl-4 text-xs text-muted-foreground">{written > 0 ? `${written.toLocaleString()} characters generated` : "Preparing your request…"}</div></div>}
+            {reply && <div className="assistant-markdown break-words text-sm leading-relaxed"><ReactMarkdown>{reply}</ReactMarkdown></div>}
+            {busy && <div role="status" className="space-y-3 text-sm"><div className="flex items-center gap-2"><Loader2 className="size-4 text-primary motion-safe:animate-spin" />{mode === "chat" && status === "generating" ? "Claude is replying" : labels[status]}</div><div className="border-l-2 border-primary/30 pl-4 text-xs text-muted-foreground">{written > 0 ? `${written.toLocaleString()} characters generated` : "Preparing your request…"}</div></div>}
             <div ref={bottomRef} />
           </div>
           <form onSubmit={send} className="shrink-0 border-t p-3">
+            <div className="mb-2 flex gap-1" role="group" aria-label="Assistant mode"><Button type="button" size="sm" variant={mode === "chat" ? "secondary" : "ghost"} disabled={busy} aria-pressed={mode === "chat"} onClick={() => setMode("chat")}><MessageSquare />Chat</Button><Button type="button" size="sm" variant={mode === "edit" ? "secondary" : "ghost"} disabled={busy} aria-pressed={mode === "edit"} onClick={() => setMode("edit")}><Code2 />Edit website</Button></div>
             <div className="rounded-lg border bg-card p-3 focus-within:ring-1 focus-within:ring-ring">
-              <textarea aria-label="Message the AI" value={prompt} disabled={busy || localSaving} onChange={(e) => setPrompt(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void send(); } }} maxLength={2000} rows={3} placeholder={html ? "Ask for a change…" : "Describe your business…"} className="w-full resize-none bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
-              <div className="mt-2 flex items-center justify-between gap-2"><span className="text-xs text-muted-foreground">1 edit per message</span>{busy ? <Button type="button" variant="secondary" size="icon" title="Stop editing" aria-label="Stop editing" onClick={() => abortRef.current?.abort()}><Square /></Button> : <Button type="submit" size="icon" title="Send message" aria-label="Send message" disabled={prompt.trim().length < 2 || !site.data || dirty || localSaving}><ArrowUp /></Button>}</div>
+              <textarea aria-label="Message the AI" value={prompt} disabled={busy || localSaving} onChange={(e) => setPrompt(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void send(); } }} maxLength={2000} rows={3} placeholder={mode === "chat" ? "Ask Claude anything…" : html ? "Ask for a change…" : "Describe your business…"} className="w-full resize-none bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
+              <div className="mt-2 flex items-center justify-between gap-2"><span className="text-xs text-muted-foreground">1 edit per message</span>{busy ? <Button type="button" variant="secondary" size="icon" title="Stop editing" aria-label="Stop editing" onClick={() => abortRef.current?.abort()}><Square /></Button> : <Button type="submit" size="icon" title="Send message" aria-label="Send message" disabled={prompt.trim().length < 2 || !site.data || (dirty && mode === "edit") || localSaving}><ArrowUp /></Button>}</div>
             </div>
           </form>
         </section>

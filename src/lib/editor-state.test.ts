@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generationSucceeded, workspaceDestination } from "./editor-state";
+import { assistantSucceeded, generationSucceeded, workspaceDestination } from "./editor-state";
 
 describe("workspace login", () => {
   it("takes signed-in visitors from the home and sign-in pages to the dashboard", () => {
@@ -12,6 +12,11 @@ describe("workspace login", () => {
 });
 
 describe("editing result", () => {
+  it("accepts conversational replies without treating them as website edits", () => {
+    expect(assistantSucceeded("Here are three ideas for your bakery.", "chat")).toBe(true);
+    expect(assistantSucceeded("Here are three ideas for your bakery.", "edit")).toBe(false);
+    expect(assistantSucceeded("<!--SHOPSITE_ERROR-->", "chat")).toBe(false);
+  });
   it("only shows success for a complete result without an error marker", () => {
     expect(generationSucceeded("<!doctype html><html><body>Shop</body></html>")).toBe(true);
     expect(generationSucceeded("<html><body>unfinished")).toBe(false);

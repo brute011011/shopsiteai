@@ -1,4 +1,7 @@
 # Roadmap
+- [ ] Claude-powered conversation with history and formatted replies, without changing the website in chat mode
+- [ ] Grant requested existing account admin access and verify permissions
+- [ ] Verify source ZIP size and provide updated clean archive
 - [x] Automatic login redirect, clear editor status and clean preview controls
 - [x] Deliver a clean project source ZIP without secrets or generated output
 - [x] Landing page, pricing, FAQ
