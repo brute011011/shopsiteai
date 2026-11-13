@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { getAdminStats } from "@/lib/account.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Admin — Shopsite AI" }, { name: "description", content: "Revenue, AI cost and margin." }, { property: "og:title", content: "Admin — Shopsite AI" }, { property: "og:description", content: "Admin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Admin — Shopsite AI" }, { name: "description", content: "Revenue, AI cost and margin." }, { property: "og:title", content: "Admin — Shopsite AI" }, { property: "og:description", content: "Admin" }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: Admin,
 });
 

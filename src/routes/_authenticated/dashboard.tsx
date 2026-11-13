@@ -10,7 +10,7 @@ import { useProfile } from "@/hooks/use-profile";
 export { useProfile };
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Home — Shopsite AI" }, { name: "description", content: "Describe a website and AI builds it." }, { property: "og:title", content: "Home — Shopsite AI" }, { property: "og:description", content: "Describe a website and AI builds it." }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Home — Shopsite AI" }, { name: "description", content: "Describe a website and AI builds it." }, { property: "og:title", content: "Home — Shopsite AI" }, { property: "og:description", content: "Describe a website and AI builds it." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: Dashboard,
 });
 

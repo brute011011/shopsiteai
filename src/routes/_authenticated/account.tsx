@@ -8,7 +8,7 @@ import { deleteMyAccount } from "@/lib/account.functions";
 import { PLANS, CREDIT_PACK } from "@/lib/pricing";
 
 export const Route = createFileRoute("/_authenticated/account")({
-  head: () => ({ meta: [{ title: "Settings — Shopsite AI" }, { name: "description", content: "Manage your plan, data and email preferences." }, { property: "og:title", content: "Account — Shopsite AI" }, { property: "og:description", content: "Manage your account." }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Settings — Shopsite AI" }, { name: "description", content: "Manage your plan, data and email preferences." }, { property: "og:title", content: "Account — Shopsite AI" }, { property: "og:description", content: "Manage your account." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: Account,
 });
 

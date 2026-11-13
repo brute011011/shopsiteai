@@ -1,6 +1,6 @@
 # Roadmap
-- [ ] Automatic login redirect, clear editor status and clean preview controls
-- [ ] Deliver a clean project source ZIP without secrets or generated output
+- [x] Automatic login redirect, clear editor status and clean preview controls
+- [x] Deliver a clean project source ZIP without secrets or generated output
 - [x] Landing page, pricing, FAQ
 - [x] Sign-up/login (email + Google), dashboard
 - [x] AI website builder with streaming, credit metering, refunds

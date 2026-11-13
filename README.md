@@ -1,5 +1,21 @@
 # Shopsiteai
 
+## Source ZIP: running this project
+
+Install dependencies with `bun install`, then start with `bun run dev`.
+Run the included tests with `bun run test`.
+
+The source export includes app code, assets, configuration, and database migrations.
+It excludes installed dependencies, generated build output, live user data, repository
+metadata, and all secret environment files.
+
+The complete app depends on Lovable Cloud for accounts and storage and the Lovable
+AI gateway for generation. These services and credentials are not included in the
+ZIP. Hosting outside Lovable requires separately configured services and server
+credentials; this is not a self-contained, ready-to-deploy Vercel package.
+
+Card payments, crypto payments, and a custom email sender are not configured yet.
+
 You are my co-founder, product strategist, and lead engineer. Help me build a real, scalable AI-powered SaaS business, starting with $0 of my own money.
 
 

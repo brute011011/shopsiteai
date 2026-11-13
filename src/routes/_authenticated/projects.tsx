@@ -7,7 +7,7 @@ import { SiteGrid } from "@/components/SiteGrid";
 import { useCreateSite } from "@/hooks/use-sites";
 
 export const Route = createFileRoute("/_authenticated/projects")({
-  head: () => ({ meta: [{ title: "Projects — Shopsite AI" }, { name: "description", content: "All your websites." }, { property: "og:title", content: "Projects — Shopsite AI" }, { property: "og:description", content: "All your websites." }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Projects — Shopsite AI" }, { name: "description", content: "All your websites." }, { property: "og:title", content: "Projects — Shopsite AI" }, { property: "og:description", content: "All your websites." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: Projects,
 });
 

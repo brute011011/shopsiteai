@@ -7,7 +7,7 @@ import { AppHeader } from "@/components/AppHeader";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>): { mode?: "signup" | "signin" | undefined } => ({ mode: s["mode"] === "signup" ? "signup" : s["mode"] === "signin" ? "signin" : undefined }),
-  head: () => ({ meta: [{ title: "Sign in — Shopsite AI" }, { name: "description", content: "Sign in or create your free Shopsite AI account." }, { property: "og:title", content: "Sign in — Shopsite AI" }, { property: "og:description", content: "Create your free account and build your website with AI." }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Shopsite AI" }, { name: "description", content: "Sign in or create your free Shopsite AI account." }, { property: "og:title", content: "Sign in — Shopsite AI" }, { property: "og:description", content: "Create your free account and build your website with AI." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: AuthPage,
 });
 

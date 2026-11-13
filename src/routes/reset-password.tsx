@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/reset-password")({
-  head: () => ({ meta: [{ title: "Set a new password — Shopsite AI" }, { name: "description", content: "Choose a new password for your Shopsite AI account." }, { property: "og:title", content: "Set a new password — Shopsite AI" }, { property: "og:description", content: "Reset your password." }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Set a new password — Shopsite AI" }, { name: "description", content: "Choose a new password for your Shopsite AI account." }, { property: "og:title", content: "Set a new password — Shopsite AI" }, { property: "og:description", content: "Reset your password." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: Reset,
 });
 
