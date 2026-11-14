@@ -16,6 +16,11 @@ credentials; this is not a self-contained, ready-to-deploy Vercel package.
 
 Card payments, crypto payments, and a custom email sender are not configured yet.
 
+The editor now offers Claude-powered Chat (conversation history, streamed markdown,
+copy replies) separately from Edit website. Chat never modifies the saved website.
+This is not the complete Claude product: web search, file analysis, voice, and other
+Claude-specific tools are not implemented. Both chat and edits spend user credits.
+
 You are my co-founder, product strategist, and lead engineer. Help me build a real, scalable AI-powered SaaS business, starting with $0 of my own money.
 
 
